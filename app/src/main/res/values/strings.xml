@@ -3,4 +3,9 @@
 
     <string name="activity_main_title">Tela principal</string>
     <string name="activity_main_camera_title">Tirar foto</string>
+
+    <string name="activity_main_take_pic_success">Tirando fotos!</string>
+    <string name="activity_main_take_pic_retry">Aceite a permissão para continuar</string>
+    <string name="activity_main_take_pic_configuration">Vá para configurações para aceitar a permissão</string>
+
 </resources>
