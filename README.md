@@ -1,4 +1,2 @@
-# Android DevConference 2017
 # Permissões com Headless Fragment
-
-Código de exemplo
+Código de exemplo do talk feito no *Android DevConference 2017*
