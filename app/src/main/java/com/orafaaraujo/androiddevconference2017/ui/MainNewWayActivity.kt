@@ -1,10 +1,14 @@
 package com.orafaaraujo.androiddevconference2017.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
+import android.support.annotation.StringRes
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import android.widget.Toast
 import com.orafaaraujo.androiddevconference2017.R
 import com.orafaaraujo.androiddevconference2017.helper.PermissionHelper
-import com.orafaaraujo.androiddevconference2017.helper.PermissionJavaHelper
 
 /**
  * Created by rafael on 7/22/17.
@@ -12,23 +16,42 @@ import com.orafaaraujo.androiddevconference2017.helper.PermissionJavaHelper
 
 class MainNewWayActivity : AppCompatActivity(), PermissionHelper.PermissionListener {
 
+    private val TAG = PermissionHelper::class.java.simpleName
+
+    // Código para abrir a camera e recupera o conteúdo.
+    private val REQUEST_IMAGE_CAPTURE: Int = 1234
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate")
         setContentView(R.layout.activity_main)
 
-        val helper: PermissionJavaHelper = PermissionJavaHelper()
-
-        findViewById(R.id.activity_main_camera_title).
-                setOnClickListener {
-                    helper.requestPermissionIfNeeded(supportFragmentManager)
-                }
+        findViewById(R.id.activity_main_camera_title).setOnClickListener {
+            val helper: PermissionHelper = PermissionHelper()
+            helper.requestPermissionIfNeeded(supportFragmentManager)
+        }
     }
 
     override fun onPermissionGranted() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d(TAG, "onPermissionGranted")
+        takeAPic()
     }
 
     override fun onPermissionDenied() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d(TAG, "onPermissionDenied")
     }
+
+    fun takeAPic() {
+        Log.d(TAG, "takeAPic")
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (takePictureIntent.resolveActivity(packageManager) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        }
+    }
+
+
+    fun toast(@StringRes message: Int, duration: Int = Toast.LENGTH_SHORT) {
+        Toast.makeText(this, getString(message), duration).show()
+    }
+
 }

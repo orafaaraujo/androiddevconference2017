@@ -1,21 +1,15 @@
 <resources>
-    <string name="app_name">Android Dev Conference 2017</string>
+    <string name="app_name">DevConference</string>
 
     <string name="activity_main_title">Tela principal</string>
     <string name="activity_main_camera_title">Tirar foto</string>
 
-    <string name="activity_main_take_pic_success">Tirando fotos!</string>
-    <string name="activity_main_take_pic_retry">Aceite a permissão para continuar</string>
-    <string name="activity_main_take_pic_configuration">Vá para configurações para aceitar a permissão</string>
+    <string name="permission_retry_title">Permissão recusada</string>
+    <string name="permission_retry_message">Para continuar é necessário aceitar as permissões</string>
 
-    <string name="permission_retry_title">Permission declined</string>
-    <string name="permission_retry_message">Alexa needs to access your microphone and storage to
-        work
-    </string>
-
-    <string name="permission_setting_title">Permission required</string>
-    <string name="permission_setting_message">Alexa needs to access your microphone and storage to
-        work.
-    </string>
+    <string name="permission_setting_title">Permissão necessária</string>
+    <string name="permission_setting_message">Para continuar, conceda as permissões nas configurações do aplicativo</string>
 
 </resources>
+
+

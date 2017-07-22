@@ -9,11 +9,15 @@ import android.support.annotation.StringRes
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.Toast
 import com.orafaaraujo.androiddevconference2017.R
+import com.orafaaraujo.androiddevconference2017.helper.PermissionHelper
 
 
 class MainCurrentWayActivity : AppCompatActivity() {
+
+    private val TAG = PermissionHelper::class.java.simpleName
 
     // Código para recuperar se status da permissão recebida é o mesmo da permissão requisitada.
     private val PERMISSION_REQUEST_CODE = 100
@@ -23,6 +27,7 @@ class MainCurrentWayActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate")
         setContentView(R.layout.activity_main)
 
         findViewById(R.id.activity_main_camera_title).
@@ -47,6 +52,7 @@ class MainCurrentWayActivity : AppCompatActivity() {
      */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.d(TAG, "onRequestPermissionsResult")
 
         if (requestCode == PERMISSION_REQUEST_CODE) {
 
@@ -64,14 +70,17 @@ class MainCurrentWayActivity : AppCompatActivity() {
     }
 
     fun showRetryMessage() {
-        toast(R.string.activity_main_take_pic_retry)
+        Log.d(TAG, "showRetryMessage")
+        toast(R.string.permission_retry_message)
     }
 
     fun showConfigurationMessage() {
-        toast(R.string.activity_main_take_pic_configuration)
+        Log.d(TAG, "showConfigurationMessage")
+        toast(R.string.permission_setting_message)
     }
 
-    fun AppCompatActivity.takeAPic() {
+    fun takeAPic() {
+        Log.d(TAG, "takeAPic")
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(packageManager) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
@@ -79,7 +88,7 @@ class MainCurrentWayActivity : AppCompatActivity() {
 
     }
 
-    fun AppCompatActivity.toast(@StringRes message: Int, duration: Int = Toast.LENGTH_SHORT) {
+    fun toast(@StringRes message: Int, duration: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(this, getString(message), duration).show()
     }
 

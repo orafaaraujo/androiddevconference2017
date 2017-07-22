@@ -24,32 +24,20 @@ import javax.inject.Inject;
 /**
  * Manages the request permission flow. {@link PermissionListener} can be used by clients who
  * wants to be notified about the permission status.
- *
- * @see
- * <a href="https://android.jlelse.eu/keeping-android-runtime-permissions-from-cluttering-your-app-headless-dialog-fragments-6d675bf080c0">Keeping
- * Android runtime permissions from cluttering your app</a>
- * @see
- * <a href="https://github.com/tylerjroach/RuntimePermissionsExample">RuntimePermissionsExample</a>
- * @see
- * <a href="https://medium.com/@ali.muzaffar/use-headless-fragment-for-android-m-run-time-permissions-and-to-check-network-connectivity-b48615f6272d">Use
- * headless Fragment for Android M run-time permissions and to check network connectivity</a>
  */
 
-public class PermissionJavaHelper extends DialogFragment {
+public class PermissionHelper extends DialogFragment {
 
-    private static final String TAG = PermissionJavaHelper.class.getSimpleName();
+    private static final String TAG = PermissionHelper.class.getSimpleName();
 
     private static final int PERMISSION_REQUEST_CODE = 100;
-
-    private static final String SAVE_INSTANCE_ALREADY_ASKED_KEY = "SAVE_INSTANCE_ALREADY_ASKED_KEY";
 
     /**
      * Permission that should be validated.
      */
     private static final String[] PERMISSIONS = new String[]{
-            permission.RECORD_AUDIO,
-            permission.WRITE_EXTERNAL_STORAGE,
-            permission.ACCESS_FINE_LOCATION};
+            permission.CAMERA,
+            permission.WRITE_EXTERNAL_STORAGE};
 
     /**
      * Indicates the user has denied at least one permission, but not checked "Don't ask again".
@@ -68,11 +56,6 @@ public class PermissionJavaHelper extends DialogFragment {
     private boolean mCheckPermissionStatus;
 
     /**
-     * Flag to avoid recreate permissions dialog in cause orientation changes.
-     */
-    private boolean mIsPermissionDialogShown;
-
-    /**
      * Called when user reject once or didn't check "Don't ask again" when reject a permission.
      */
     private AlertDialog mRetryDialog;
@@ -86,7 +69,7 @@ public class PermissionJavaHelper extends DialogFragment {
     private PermissionListener mListener;
 
     @Inject
-    public PermissionJavaHelper() {
+    public PermissionHelper() {
     }
 
     @Override
@@ -105,25 +88,10 @@ public class PermissionJavaHelper extends DialogFragment {
 
         // Styling to make the background a little darker, like a dialog background.
         setStyle(STYLE_NO_TITLE, R.style.PermissionsDialogFragmentStyle);
+        setCancelable(true);
 
         mCheckPermissionStatus = false;
-        mIsPermissionDialogShown = true;
-
-        // Check if must show permissions dialog if orientation changes and fragment is recreated.
-        // If already showing, don't create again. If don't, create when user rotate the phone.
-        if (savedInstanceState == null ||
-                savedInstanceState.containsKey(SAVE_INSTANCE_ALREADY_ASKED_KEY) &&
-                        !savedInstanceState.getBoolean(SAVE_INSTANCE_ALREADY_ASKED_KEY)) {
-            requestPermissions(PERMISSIONS, PERMISSION_REQUEST_CODE);
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceState");
-        // Save if permission dialog is already displayed.
-        outState.putBoolean(SAVE_INSTANCE_ALREADY_ASKED_KEY, mIsPermissionDialogShown);
+        requestPermissions(PERMISSIONS, PERMISSION_REQUEST_CODE);
     }
 
     @Override
@@ -160,11 +128,10 @@ public class PermissionJavaHelper extends DialogFragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-            @NonNull int[] grantResults) {
+                                           @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult");
 
         mCheckPermissionStatus = true;
-        mIsPermissionDialogShown = false;
 
         for (int i = 0; i < permissions.length; i++) {
             final String permission = permissions[i];
@@ -261,8 +228,7 @@ public class PermissionJavaHelper extends DialogFragment {
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        requestPermissions(PERMISSIONS,
-                                PERMISSION_REQUEST_CODE);
+                        requestPermissions(PERMISSIONS, PERMISSION_REQUEST_CODE);
                     }
                 })
                 .setNegativeButton(android.R.string.cancel,
