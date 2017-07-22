@@ -22,8 +22,8 @@ class MainActivity : AppCompatActivity() {
 
         Injector.getApplicationComponent().inject(this)
 
-        findViewById(R.id.activity_main_camera_title)
-                .setOnClickListener {
+        findViewById(R.id.activity_main_camera_title).
+                setOnClickListener {
 
                     // Recupera o status da permissão
                     val permissionCheck = ContextCompat.checkSelfPermission(this, CAMERA)
