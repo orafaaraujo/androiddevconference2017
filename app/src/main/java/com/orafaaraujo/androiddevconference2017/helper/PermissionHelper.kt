@@ -161,13 +161,18 @@ class PermissionHelper @Inject constructor() : DialogFragment() {
      * @param fragmentManager [FragmentManager] of the Activity that is calling.
      */
 
-    fun requestPermissionIfNeeded(fragmentManager: FragmentManager) {
+    fun requestPermissionIfNeeded(fragmentManager: FragmentManager,
+                                  configurationMessage: String? = "aaa",
+                                  retryMessage: String = "Bbb" ) {
         Log.d(TAG, "requestPermissionIfNeeded")
         val fragment = fragmentManager.findFragmentByTag(TAG)
         if (fragment == null && !isAdded) {
             Log.d(TAG, "requestPermissionIfNeeded - show fragment")
             show(fragmentManager, TAG)
             fragmentManager.executePendingTransactions()
+
+            mConfigurationMessage = configurationMessage
+            mRetryMessage = retryMessage
         }
     }
 
@@ -204,7 +209,7 @@ class PermissionHelper @Inject constructor() : DialogFragment() {
 
     private fun showRetryDialog() {
         Log.d(TAG, "showRetryDialog")
-        if (mRetryDialog != null && mRetryDialog!!.isShowing) {
+        if (mRetryDialog?.isShowing == true) {
             return
         }
 
