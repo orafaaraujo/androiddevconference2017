@@ -1,9 +1,7 @@
 package com.orafaaraujo.androiddevconference2017.ui
 
-import android.Manifest
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-
 import com.orafaaraujo.androiddevconference2017.R
 import com.orafaaraujo.androiddevconference2017.helper.PermissionHelper
 import com.orafaaraujo.androiddevconference2017.helper.PermissionJavaHelper
@@ -22,11 +20,7 @@ class MainNewWayActivity : AppCompatActivity(), PermissionHelper.PermissionListe
 
         findViewById(R.id.activity_main_camera_title).
                 setOnClickListener {
-                    helper.requestPermissions(
-                            supportFragmentManager,
-                            arrayOf(Manifest.permission.CAMERA),
-                            "retry", "retryyyy",
-                            "config", "configggg")
+                    helper.requestPermissionIfNeeded(supportFragmentManager)
                 }
     }
 
