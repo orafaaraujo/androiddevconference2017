@@ -19,8 +19,6 @@ import android.util.Log;
 
 import com.orafaaraujo.androiddevconference2017.R;
 
-import javax.inject.Inject;
-
 /**
  * Manages the request permission flow. {@link PermissionListener} can be used by clients who
  * wants to be notified about the permission status.
@@ -68,7 +66,6 @@ public class PermissionHelper extends DialogFragment {
 
     private PermissionListener mListener;
 
-    @Inject
     public PermissionHelper() {
     }
 
@@ -137,13 +134,15 @@ public class PermissionHelper extends DialogFragment {
             final String permission = permissions[i];
             final int grantResult = grantResults[i];
 
-            if (!shouldShowRequestPermissionRationale(permission)
-                    && grantResult != PackageManager.PERMISSION_GRANTED) {
-                mExternalRequestRequired = true;
-                return;
-            } else if (grantResult != PackageManager.PERMISSION_GRANTED) {
-                mShouldRetry = true;
-                return;
+            if (grantResult != PackageManager.PERMISSION_GRANTED) {
+
+                if (!shouldShowRequestPermissionRationale(permission)) {
+                    mExternalRequestRequired = true;
+                    return;
+                } else {
+                    mShouldRetry = true;
+                    return;
+                }
             }
         }
     }

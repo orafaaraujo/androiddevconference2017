@@ -26,7 +26,7 @@ class MainNewWayActivity : AppCompatActivity(), PermissionHelper.PermissionListe
         Log.d(TAG, "onCreate")
         setContentView(R.layout.activity_main)
 
-        findViewById(R.id.activity_main_camera_title).setOnClickListener {
+        findViewById(R.id.activity_main_camera).setOnClickListener {
             val helper: PermissionHelper = PermissionHelper()
             helper.requestPermissionIfNeeded(supportFragmentManager)
         }

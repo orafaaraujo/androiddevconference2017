@@ -30,41 +30,39 @@ class MainCurrentWayActivity : AppCompatActivity() {
         Log.d(TAG, "onCreate")
         setContentView(R.layout.activity_main)
 
-        findViewById(R.id.activity_main_camera_title).
-                setOnClickListener {
+        findViewById(R.id.activity_main_camera).setOnClickListener {
 
-                    // Recupera o status da permissão
-                    val permissionCheck = ContextCompat.checkSelfPermission(this, CAMERA)
+            // Recupera o status da permissão
+            val permissionCheck = ContextCompat.checkSelfPermission(this, CAMERA)
 
-                    // Permissão não está concedida?
-                    if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                        // Requisita a permissão
-                        ActivityCompat
-                                .requestPermissions(this, arrayOf(CAMERA), PERMISSION_REQUEST_CODE)
-                    } else {
-                        takeAPic()
-                    }
-                }
+            // Permissão está concedida?
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                takeAPic()
+            } else {
+                ActivityCompat
+                        .requestPermissions(this, arrayOf(CAMERA), PERMISSION_REQUEST_CODE)
+            }
+        }
     }
 
     /**
      * Recupera resultado da dialog de permissão
      */
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.d(TAG, "onRequestPermissionsResult")
 
         if (requestCode == PERMISSION_REQUEST_CODE) {
-
-            // Usuário negou a permissão e marcou "Nãro perguntar novamente"
-            if (!shouldShowRequestPermissionRationale(permissions[0]) && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                // Avisar que usuário deve conceder permissão nas Configurações
-                showConfigurationMessage()
-            } else if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                // Avisar usuário para tentar novamente a aceitar
-                showRetryMessage()
-            } else {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 takeAPic()
+            } else {
+                if (shouldShowRequestPermissionRationale(permissions[0])) {
+                    showRetryMessage()
+                } else {
+                    // Usuário negou a permissão mas não marcou "Não perguntar novamente"
+                    showConfigurationMessage()
+                }
             }
         }
     }
