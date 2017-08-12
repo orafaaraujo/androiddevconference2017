@@ -9,12 +9,13 @@ import android.util.Log
 import android.widget.Toast
 import com.orafaaraujo.androiddevconference2017.R
 import com.orafaaraujo.androiddevconference2017.helper.PermissionHelper
+import com.orafaaraujo.androiddevconference2017.helper.PermissionListener
 
 /**
  * Created by rafael on 7/22/17.
  */
 
-class MainNewWayActivity : AppCompatActivity(), PermissionHelper.PermissionListener {
+class MainNewWayActivity : AppCompatActivity(), PermissionListener {
 
     private val TAG = PermissionHelper::class.java.simpleName
 
