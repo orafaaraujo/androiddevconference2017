@@ -67,14 +67,13 @@ class PermissionHelper : DialogFragment() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
                                             grantResults: IntArray) {
         mCheckPermissionStatus = true
+        mShouldRetry = false
+        mExternalRequestRequired = false
 
         for (i in permissions.indices) {
-            val permission = permissions[i]
-            val grantResult = grantResults[i]
+            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
 
-            if (grantResult != PackageManager.PERMISSION_GRANTED) {
-
-                if (shouldShowRequestPermissionRationale(permission)) {
+                if (shouldShowRequestPermissionRationale(permissions[i])) {
                     mShouldRetry = true
                     return
                 } else {
