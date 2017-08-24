@@ -59,10 +59,10 @@ class PermissionHelper : DialogFragment() {
         if (mCheckPermissionStatus && mAcceptedAll) {
             onPermissionGranted()
         } else {
-            if (mShouldRetry) {
-                showRetryDialog()
-            } else if (mExternalRequestRequired) {
+            if (mExternalRequestRequired) {
                 showAppSettingDialog()
+            } else if (mShouldRetry) {
+                showRetryDialog()
             }
         }
     }
@@ -73,19 +73,19 @@ class PermissionHelper : DialogFragment() {
 
         resetFlags()
 
-        for (i in permissions.indices) {
-            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-
-                if (shouldShowRequestPermissionRationale(permissions[i])) {
-                    mShouldRetry = true
-                    return
-                } else {
-                    mExternalRequestRequired = true
-                    return
+        permissions.indices
+                .filter { grantResults[it] == PackageManager.PERMISSION_DENIED }
+                .forEach {
+                    if (!shouldShowRequestPermissionRationale(permissions[it])) {
+                        mExternalRequestRequired = true
+                        return
+                    } else {
+                        mShouldRetry = true
+                    }
                 }
-            }
+        if (!mShouldRetry) {
+            mAcceptedAll = true
         }
-        mAcceptedAll = true
     }
 
     private fun resetFlags() {
