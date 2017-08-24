@@ -17,7 +17,7 @@ import com.orafaaraujo.androiddevconference2017.helper.PermissionListener
 
 class MainNewWayActivity : AppCompatActivity(), PermissionListener {
 
-    private val TAG = PermissionHelper::class.java.simpleName
+    private val TAG = MainNewWayActivity::class.java.simpleName
 
     // Código para abrir a camera e recupera o conteúdo.
     private val REQUEST_IMAGE_CAPTURE: Int = 1234
@@ -28,7 +28,7 @@ class MainNewWayActivity : AppCompatActivity(), PermissionListener {
         setContentView(R.layout.activity_main)
 
         findViewById(R.id.activity_main_camera).setOnClickListener {
-            val helper: PermissionHelper = PermissionHelper()
+            val helper = PermissionHelper()
             helper.requestPermissionIfNeeded(supportFragmentManager)
         }
     }
@@ -43,7 +43,7 @@ class MainNewWayActivity : AppCompatActivity(), PermissionListener {
         toast(R.string.permission_setting_message)
     }
 
-    fun takeAPic() {
+    private fun takeAPic() {
         Log.d(TAG, "takeAPic")
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(packageManager) != null) {
@@ -52,7 +52,7 @@ class MainNewWayActivity : AppCompatActivity(), PermissionListener {
     }
 
 
-    fun toast(@StringRes message: Int, duration: Int = Toast.LENGTH_SHORT) {
+    private fun toast(@StringRes message: Int, duration: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(this, getString(message), duration).show()
     }
 

@@ -9,24 +9,33 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.content.ContextCompat
+import android.util.Log
 import com.orafaaraujo.androiddevconference2017.R
-import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.appcompat.v7.Appcompat
+import org.jetbrains.anko.cancelButton
+import org.jetbrains.anko.okButton
 
 class PermissionHelper : DialogFragment() {
 
-    private val PERMISSION_TAG = "PERMISSION_TAG"
-    private val PERMISSION_REQUEST_CODE = 100
-    private val PERMISSIONS = arrayOf(permission.CAMERA, permission.RECORD_AUDIO)
+    private val TAG = PermissionHelper::class.java.simpleName
 
+    private val PERMISSION_TAG = "PERMISSION_TAG"
+
+    private val PERMISSIONS = arrayOf(permission.CAMERA, permission.RECORD_AUDIO)
+    private val PERMISSION_RC = 100
+
+    private var mAcceptedAll: Boolean = false
     private var mShouldRetry: Boolean = false
     private var mExternalRequestRequired: Boolean = false
+
     private var mCheckPermissionStatus: Boolean = false
 
     private lateinit var mListener: PermissionListener
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
+        Log.d(TAG, "onAttach")
         if (context is PermissionListener) {
             mListener = context
         }
@@ -34,41 +43,35 @@ class PermissionHelper : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate")
 
         // Styling to make the background a little darker, like a dialog background.
         setStyle(DialogFragment.STYLE_NO_TITLE, R.style.PermissionsDialogFragmentStyle)
-        isCancelable = true
+        isCancelable = false
 
-        mCheckPermissionStatus = false
-        requestPermissions(PERMISSIONS, PERMISSION_REQUEST_CODE)
+        requestPermissions(PERMISSIONS, PERMISSION_RC)
     }
 
     override fun onResume() {
         super.onResume()
+        Log.d(TAG, "onResume")
 
-        if (mCheckPermissionStatus) {
-            if (areAllPermissionsGranted()) {
-                onPermissionGranted()
-            } else {
-                if (mShouldRetry) {
-                    showRetryDialog()
-                } else if (mExternalRequestRequired) {
-                    showAppSettingDialog()
-                }
+        if (mCheckPermissionStatus && mAcceptedAll) {
+            onPermissionGranted()
+        } else {
+            if (mShouldRetry) {
+                showRetryDialog()
+            } else if (mExternalRequestRequired) {
+                showAppSettingDialog()
             }
         }
     }
 
-    private fun onPermissionGranted() {
-        mListener.onPermissionGranted()
-        dismiss()
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
                                             grantResults: IntArray) {
-        mCheckPermissionStatus = true
-        mShouldRetry = false
-        mExternalRequestRequired = false
+        Log.d(TAG, "onRequestPermissionsResult")
+
+        resetFlags()
 
         for (i in permissions.indices) {
             if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
@@ -82,9 +85,20 @@ class PermissionHelper : DialogFragment() {
                 }
             }
         }
+        mAcceptedAll = true
+    }
+
+    private fun resetFlags() {
+        mCheckPermissionStatus = true
+
+        mAcceptedAll = false
+        mShouldRetry = false
+        mExternalRequestRequired = false
     }
 
     fun requestPermissionIfNeeded(fragmentManager: FragmentManager) {
+        Log.d(TAG, "requestPermissionIfNeeded")
+
         val fragment = fragmentManager.findFragmentByTag(PERMISSION_TAG)
         if (fragment == null && !isAdded) {
             show(fragmentManager, PERMISSION_TAG)
@@ -92,34 +106,52 @@ class PermissionHelper : DialogFragment() {
         }
     }
 
-    private fun areAllPermissionsGranted(): Boolean {
-        return PERMISSIONS.none {
-            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_DENIED
-        }
-    }
-
     private fun showAppSettingDialog() {
-        alert(R.string.permission_setting_message) {
+        Log.d(TAG, "showAppSettingDialog")
+
+        val pwAlert = activity.alert(Appcompat) {
             titleResource = R.string.permission_setting_title
-            positiveButton(android.R.string.ok) { showAppSettings() }
-            negativeButton(android.R.string.cancel) { onDialogPermissionCanceled() }
-        }.show()
+            messageResource = R.string.permission_setting_message
+            okButton { showAppSettings() }
+            cancelButton { onPermissionDenied() }
+        }.build()
+        pwAlert.setCancelable(false)
+        pwAlert.setCanceledOnTouchOutside(false)
+        pwAlert.show()
     }
 
     private fun showRetryDialog() {
-        alert(R.string.permission_retry_message) {
+        Log.d(TAG, "showRetryDialog")
+
+        val pwAlert = activity.alert(Appcompat) {
             titleResource = R.string.permission_retry_title
-            positiveButton(android.R.string.ok) { requestPermissions(PERMISSIONS, PERMISSION_REQUEST_CODE) }
-            negativeButton(android.R.string.cancel) { onDialogPermissionCanceled() }
-        }.show()
+            messageResource = R.string.permission_retry_message
+            okButton { requestPermissions(PERMISSIONS, PERMISSION_RC) }
+            cancelButton { onPermissionDenied() }
+        }.build()
+        pwAlert.setCancelable(false)
+        pwAlert.setCanceledOnTouchOutside(false)
+        pwAlert.show()
+
     }
 
-    private fun onDialogPermissionCanceled() {
+    private fun onPermissionGranted() {
+        Log.d(TAG, "onPermissionGranted")
+
+        dismiss()
+        mListener.onPermissionGranted()
+    }
+
+    private fun onPermissionDenied() {
+        Log.d(TAG, "onPermissionDenied")
+
         dismiss()
         mListener.onPermissionDenied()
     }
 
     private fun showAppSettings() {
+        Log.d(TAG, "showAppSettings")
+
         val intent = Intent()
         intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
         intent.data = Uri.fromParts("package", context.packageName, null)
